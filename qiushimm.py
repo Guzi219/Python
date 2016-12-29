@@ -17,7 +17,26 @@ class Spider_Model:
         self.page = 1
         self.pages = []  
         self.enable = False
-        self.save_path = 'F:\\qiushimm\\'
+        self.init_work_dir()
+        #self.save_path = 'F:\\qiushimm\\'
+
+    def init_work_dir(self):
+        retval = os.getcwd()
+        print '#current dir is : ' + retval
+        # 图片存放路径
+        store_dir = retval + r'\tmp'
+        print '#all imgs are going to be stored in dir :' + store_dir
+
+        if not os.path.exists(store_dir):
+            print '#tmp dir does not exist, attemp to mkdir'
+            os.mkdir(store_dir)
+            print '#mkdir sucessfully'
+        else:
+            print '#tmp dir is already exist'
+
+        print '#now change current dir to tmp'
+        os.chdir(store_dir)
+        print os.getcwd()
 
     #获取当前时间
     def now_date(self):
@@ -134,22 +153,7 @@ print u"""
    功能：按下回车依次浏览今日的糗百热点 
 --------------------------------------- 
 """
-  
-  
+myModel = Spider_Model()
 print u'请按下回车浏览今日的糗百内容：'
-# 查看当前工作目录
-retval = os.getcwd()
-print "当前工作目录为 %s" % retval
-
-# 修改当前工作目录
-os.chdir('F:\\qiushimm\\')
-
-# 查看修改后的工作目录
-retval = os.getcwd()
-
-print "目录修改成功 %s" % retval
-
-
-raw_input(' ')  
-myModel = Spider_Model()  
+raw_input(' ')
 myModel.Start()  
