@@ -8,6 +8,7 @@ import string
 import thread
 import time
 import urllib2
+import base64
 
 
 #----------- 加载处理糗事百科 -----------
@@ -70,13 +71,14 @@ class Spider_Model:
         print '\ndone save file ' + save_file_name
 
     # 将所有的段子都扣出来，添加到列表中并且返回列表  
-    def GetPage(self,page):  
-        myUrl = "http://www.qiushimm.com/page/" + page  
+    def GetPage(self,page):
+        site_url = base64.decodestring("aHR0cDovL3d3dy5xaXVzaGltbS5jb20vcGFnZS8=")
+        myUrl = site_url + page
         user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)' 
         headers = { 'User-Agent' : user_agent } 
         req = urllib2.Request(myUrl, headers = headers)
 
-        print u'\n----background----now loading: ' + myUrl
+        print u'\n----background----now loading: page/' + page
         
         myResponse = urllib2.urlopen(req)
         myPage = myResponse.read()  
@@ -94,7 +96,7 @@ class Spider_Model:
         # 如果用户未输入:q则一直运行  
         while self.enable:  
             # 如果pages数组中的内容小于2个
-            print '\n----background----self.pages length: ' + str(len(self.pages))
+            #print '\n----background----self.pages length: ' + str(len(self.pages))
             #预加载2页数据
             if len(self.pages) < 2:
                 try:  
