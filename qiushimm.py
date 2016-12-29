@@ -91,7 +91,7 @@ class Spider_Model:
   
     # 用于加载新的段子  
     def LoadPage(self):  
-        # 如果用户未输入quit则一直运行  
+        # 如果用户未输入:q则一直运行  
         while self.enable:  
             # 如果pages数组中的内容小于2个
             print '\n----background----self.pages length: ' + str(len(self.pages))
@@ -149,7 +149,7 @@ print u"""
    作者：why 
    日期：2016-12-29
    语言：Python 2.7 
-   操作：输入quit退出阅读糗事百科 
+   操作：输入:q退出阅读糗事百科 
    功能：按下回车依次浏览今日的糗百热点 
 --------------------------------------- 
 """
