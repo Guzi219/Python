@@ -21,6 +21,7 @@ class Spider_Model:
         self.init_work_dir()
         #self.save_path = 'F:\\qiushimm\\'
 
+    #init the storage dir
     def init_work_dir(self):
         retval = os.getcwd()
         print '#current dir is : ' + retval
@@ -87,6 +88,7 @@ class Spider_Model:
         unicodePage = myPage.decode("utf-8")
 
         #re.S是任意匹配模式，也就是.可以匹配换行符
+        #myItems[0]:the picurl; myItems[1]: the title
         myItems = re.findall('<noscript><img.*? src="(.+?)" alt="(.*?)" /></noscript>',unicodePage,re.S)
 
         return myItems  
@@ -112,7 +114,8 @@ class Spider_Model:
                 print '\n----background----pause and wait.'
             print '\n----background----sleep 2s, do not request too fast.'
             time.sleep(2)  # sleep 2s for test
-          
+
+    #show one page after press enter button.
     def ShowOnePage(self,now_page_items,page):
         for idx, item in enumerate(now_page_items):
             print "\ndownload " + item[1]
