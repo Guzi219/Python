@@ -1,2 +1,5 @@
 #add ignore dir tmp
 tmp/
+*.pyc
+*.properties
+Properties.py
