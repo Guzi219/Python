@@ -147,7 +147,7 @@ class Spider_Model:
             os._exit(0)
 
         old_page_num = file.GetValue('Main', 'totalpage')
-        print '====================the toalpage is [%s]====================' % (old_page_num)
+        print '====================the old_page_num is [%s], the new_page_num is [%s]====================' % (old_page_num, new_page_num)
         file.SetValue('Main', 'totalpage', new_page_num)
         #close all
         file.UnInit()
@@ -194,8 +194,10 @@ class Spider_Model:
         for idx, item in enumerate(now_page_items):
             print "\ndownload " + item[1]
             self.saveFile(item[0], page, idx)
-            if self.unload_page_num == page:
-                print 'Nothing left. Please close this application.'
+
+        if self.unload_page_num == page:
+            print 'Nothing left. Please close this application.'
+
         # 输出一页后暂停
         myInput = raw_input()
         if myInput == ":q":
