@@ -9,6 +9,7 @@ import thread
 import time
 import urllib2
 import base64
+import hashlib
 from BeautifulSoup import BeautifulSoup
 from INIFILE import INIFILE
 
@@ -57,7 +58,7 @@ class Spider_Model:
         # 获得当前时间
         now = datetime.datetime.now()  # ->这是时间数组格式
         # 转换为指定的格式:
-        formateDate = now.strftime("%Y%m%d")
+        formateDate = now.strftime("%Y%m%d%H%M%S")
         return formateDate
 
     # 显示图片后缀名
@@ -152,9 +153,10 @@ class Spider_Model:
         #close all
         file.UnInit()
 
-        if int(new_page_num) > int(old_page_num): #if there is new page
+        if int(new_page_num) >= int(old_page_num): #if there is new page
             self.unload_page_num = int(new_page_num) - int(old_page_num)
-
+            if self.unload_page_num == 0:   #页码未增加，但是图片新增了
+               self.unload_page_num = 1
             print 'Ok, we got %s pages to load.' %(self.unload_page_num)
         else: #nothing new, stop main thread
             print 'Oops! Nothing new. exit main thread now.'
@@ -196,6 +198,7 @@ class Spider_Model:
             self.saveFile(item[0], page, idx)
 
         if self.unload_page_num == page:
+            self.CleanRepeatImage() #at last, deal with the repeated images.
             print 'Nothing left. Please close this application.'
 
         # 输出一页后暂停
@@ -203,12 +206,48 @@ class Spider_Model:
         if myInput == ":q":
             self.enable = False
 
+    # deal with the repeated image
+    def CleanRepeatImage(self):
+        if not os.path.exists('repeat'): #store the repeated file
+            os.mkdir('repeat')
+
+        hash_imgs = {}  # store the img_hash as key, the filepath as value..
+        img_files = os.listdir('tmp')
+
+        for file in img_files:
+            # print type(file) the type of 'file' is str.
+            f = open(os.path.join('tmp', file), 'rb')
+            hash_img = hashlib.md5(f.read()).hexdigest()  # md5 this file.
+            f.close()
+            # print type(hash_img)
+            # print hash_img
+            if not hash_imgs.has_key(hash_img):
+                hash_imgs[hash_img] = file
+            else:
+                print '--------------'
+                print '%s already exsits.' % (file)  # the current file to be record.
+                print hash_imgs.get(hash_img)  # the file already record.
+                print '--------------'
+                # keep the lastest "modified date" file
+                f1 = os.path.join('tmp', file)
+                f2 = os.path.join('tmp', hash_imgs.get(hash_img))
+                f1_mtime = os.path.getmtime(f1)
+                f2_mtime = os.path.getmtime(f2)
+                if f1_mtime > f2_mtime:
+                    os.rename(f2, os.path.join('repeat', hash_imgs.get(hash_img)))
+                else:
+                    os.rename(f1, os.path.join('repeat', file))
+
+        print 'done delete repeat files.'
+
+
     def Start(self):
         self.enable = True
         page = self.page
         print u'正在加载中请稍候......'
         # 新建一个线程在后台加载段子并存储
         thread.start_new_thread(self.LoadPage, ())
+        time.sleep(2) #wait the sub thread to be done.
         # ----------- 加载处理糗事百科 -----------
         while self.enable:
             # 如果self的page数组中存有元素
