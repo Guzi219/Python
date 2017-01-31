@@ -66,3 +66,4 @@ git branch --set-upstream <本地支分支名> <远程仓库名，默认origin>/
 git remote add origin <URL地址> 本地库与远征库关联
 git push -u origin master 关联后，使用命令第一次推送master分支的所有内容，   -u参数为推送当前分支所有内容
 
+git rm -r --cached .    删除本地缓存，然后再提交，因为.gitignore只能忽略那些原来没有被track的文件
