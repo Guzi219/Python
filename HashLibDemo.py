@@ -22,13 +22,16 @@ import shutil
 #list all file in dir
 if os.path.exists('tmp'):
     listfile = os.listdir('tmp')
-#store the img_hash as key, the filepath as value..
-hash_imgs = {}
+
+if not os.path.exists('repeat'):
+    os.mkdir('repeat')
+
+hash_imgs = {}    # store the img_hash as key, the filepath as value..
 
 if 'listfile' in locals().keys():
     for file in listfile:
         #print type(file) the type of 'file' is str.
-        # print 'now is file : %s' %(file)
+        print 'now is file : %s' %(file)
         f = open('tmp/'+file,'rb')
         hash_img = hashlib.md5(f.read()).hexdigest() #md5 this file.
         f.close()
@@ -44,4 +47,4 @@ if 'listfile' in locals().keys():
             #copy the repeating file to 'repeat'
             shutil.copyfile('tmp/'+file,'repeat/'+file)
             shutil.copyfile('tmp/'+hash_imgs.get(hash_img),'repeat/'+hash_imgs.get(hash_img))
-    # print str(hash_imgs)
+    print str(hash_imgs)
