@@ -57,7 +57,7 @@ class Spider_Model:
         # 获得当前时间
         now = datetime.datetime.now()  # ->这是时间数组格式
         # 转换为指定的格式:
-        formateDate = now.strftime("%Y%m%d")
+        formateDate = now.strftime("%Y%m%d%H%M%S")
         return formateDate
 
     # 显示图片后缀名
@@ -152,9 +152,10 @@ class Spider_Model:
         #close all
         file.UnInit()
 
-        if int(new_page_num) > int(old_page_num): #if there is new page
+        if int(new_page_num) >= int(old_page_num): #if there is new page
             self.unload_page_num = int(new_page_num) - int(old_page_num)
-
+            if self.unload_page_num == 0:   #页码未增加，但是图片新增了
+               self.unload_page_num = 1
             print 'Ok, we got %s pages to load.' %(self.unload_page_num)
         else: #nothing new, stop main thread
             print 'Oops! Nothing new. exit main thread now.'
