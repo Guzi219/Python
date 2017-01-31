@@ -45,8 +45,7 @@ git rm <文件名>		 删除指定的文件
 
 git stash  把当前工作现场“储藏”起来，等以后恢复现场后继续工作
 git stash list 查看暂存状态
-git stash apply 恢复暂存状态
-git stash drop  删除暂存状态
+git stash apply 恢复暂存状态 git stash drop  删除暂存状态
 git stash pop   恢复并删除暂存状态
 git stash apply <stash@{0}>  恢复指定的暂存状态
 
