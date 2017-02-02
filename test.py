@@ -54,28 +54,28 @@ some_html = '''
 #     print last_page_html.text
 
 print '============================'
-# file = INIFILE('totalpage.ini')
-#
-# #must write something if you set is_write to true. otherwise your file become empty.
-# is_ok = file.Init(True, True)
-# if not is_ok:
-#     print 'class initializing failed. check the [%s] file first.' % ('totalpage.ini')
-#     exit(0)
-# num = file.GetValue('Main', 'totalpage')
-# print 'the toalpage is [%s]' % (num)
-# file.SetValue('Main', 'totalpage', 800)
-#
-# # print file.GetValue('Main', 'TotalPage', '0')
-#
-# # file.SetValue('DEMO', 'whoami', 'Admin')
-# # print file.GetValue('DEMO', 'whoami', 'Admin')
-#
-# file.UnInit()
-files = os.listdir('tmp')
-for f in files:
-    time_seconds = os.path.getmtime(os.path.join('tmp', f))
-    time_ctime = time.ctime(time_seconds)
-    # time_format = time_ctime.strftime
-    print time_seconds
+file = INIFILE('totalpage.ini')
+
+#must write something if you set is_write to true. otherwise your file become empty.
+is_ok = file.Init(True, True)
+if not is_ok:
+    print 'class initializing failed. check the [%s] file first.' % ('totalpage.ini')
+    exit(0)
+num = file.GetValue('Main', 'totalpage')
+print 'the toalpage is [%s]' % (num)
+file.SetValue('Main', 'totalpage', 809)
+
+# print file.GetValue('Main', 'TotalPage', '0')
+
+# file.SetValue('DEMO', 'whoami', 'Admin')
+# print file.GetValue('DEMO', 'whoami', 'Admin')
+
+file.UnInit()
+# files = os.listdir('tmp')
+# for f in files:
+#     time_seconds = os.path.getmtime(os.path.join('tmp', f))
+#     time_ctime = time.ctime(time_seconds)
+#     # time_format = time_ctime.strftime
+#     print time_seconds
 
 
