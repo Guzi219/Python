@@ -38,9 +38,10 @@ class Tv_Dy2018:
             for link in links:
                 # print type(link)
                 # print type(link.string)
-                print unicode(link.string)
-                titles = re.findall(r'《(.+?)》', '2017年美国欧美剧《海豹六队第一季》连载至3') #unicode(link.string))
-                print titles
+                # print unicode(link.string)
+                titles = re.findall(r'《(.+?)》', str(link.string)) #unicode(link.string))
+                if len(titles) <> 0:
+                    print titles[0]
                 # print 'url is %s, title is %s.' %(link['href'], titles[0])
 
 myUrl = '/html/tv/oumeitv/index.html'
