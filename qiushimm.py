@@ -28,8 +28,8 @@ class Spider_Model:
         self.unload_page_num = 0 #page to be loaded
         # self.save_path = 'F:\\qiushimm\\'
 
-    # init the storage dir = 'tmp /'
 
+    # init the storage dir = 'tmp /'
     def init_work_dir(self):
         retval = os.getcwd()
         print '#current dir is : ' + retval
@@ -199,10 +199,12 @@ class Spider_Model:
         for idx, item in enumerate(now_page_items):
             print "\ndownload " + item[1]
             self.saveFile(item[0], page, idx)
-
+        print '========one page down.================='
         if self.unload_page_num == page:
             self.CleanRepeatImage() #at last, deal with the repeated images.
-            print 'Nothing left. Please close this application.'
+            print 'Nothing left. Now close this application.'
+            # self.enable = False  #let the main thread know it's time to quit
+            os._exit(0)
 
         # 输出一页后暂停
         myInput = raw_input()
@@ -237,9 +239,11 @@ class Spider_Model:
                 f1_mtime = os.path.getmtime(f1)
                 f2_mtime = os.path.getmtime(f2)
                 if f1_mtime > f2_mtime:
-                    os.rename(f2, os.path.join('repeat', hash_imgs.get(hash_img)))
+                    # os.rename(f2, os.path.join('repeat', hash_imgs.get(hash_img)))
+                    os.remove(f2) #or remove image
                 else:
-                    os.rename(f1, os.path.join('repeat', file))
+                    # os.rename(f1, os.path.join('repeat', file))
+                    os.remove(f1) #or remove image
 
         print 'done delete repeat files.'
 
@@ -254,7 +258,7 @@ class Spider_Model:
         # ----------- 加载处理糗事百科 -----------
         while self.enable:
             # 如果self的page数组中存有元素
-            if self.pages:
+            if len(self.pages) > 0:
                 now_page_items = self.pages[0]
 
                 # del now page items
@@ -262,6 +266,8 @@ class Spider_Model:
 
                 self.ShowOnePage(now_page_items, page)
                 page += 1
+
+        print self.enable
 
 
 # ----------- 程序的入口处 -----------
