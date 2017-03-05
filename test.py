@@ -7,6 +7,8 @@
 from BeautifulSoup import BeautifulSoup
 from INIFILE import INIFILE
 import random
+import os
+import time
 
 soup = BeautifulSoup('<em title="python" class="boldest ts" value="hh">Extremely bold</em>')
 tag = soup.em
@@ -61,7 +63,7 @@ if not is_ok:
     exit(0)
 num = file.GetValue('Main', 'totalpage')
 print 'the toalpage is [%s]' % (num)
-file.SetValue('Main', 'totalpage', 800)
+file.SetValue('Main', 'totalpage', 809)
 
 # print file.GetValue('Main', 'TotalPage', '0')
 
@@ -69,3 +71,11 @@ file.SetValue('Main', 'totalpage', 800)
 # print file.GetValue('DEMO', 'whoami', 'Admin')
 
 file.UnInit()
+# files = os.listdir('tmp')
+# for f in files:
+#     time_seconds = os.path.getmtime(os.path.join('tmp', f))
+#     time_ctime = time.ctime(time_seconds)
+#     # time_format = time_ctime.strftime
+#     print time_seconds
+
+
