@@ -194,8 +194,14 @@ class Spider_Model:
         for idx, item in enumerate(now_page_items):
             print "\ndownload " + item[1]
             self.saveFile(item[0], page, idx)
-            if self.unload_page_num == page:
-                print 'Nothing left. Please close this application.'
+        print '========one page done.================='
+        if self.unload_page_num == page:
+            print '========all pages done. clean the repeated files.=========='
+            self.CleanRepeatImage() #at last, deal with the repeated images.
+            print 'Nothing left. Now close this application.'
+            # self.enable = False  #let the main thread know it's time to quit
+            os._exit(0) #can teminal main thread.
+
         # 输出一页后暂停
         myInput = raw_input()
         if myInput == ":q":
