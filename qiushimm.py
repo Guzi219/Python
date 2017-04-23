@@ -86,7 +86,7 @@ class Spider_Model:
 
     # 将所有的段子都扣出来，添加到列表中并且返回列表  
     def GetPage(self, page):
-        site_url = base64.decodestring("aHR0cDovL3d3dy5xaXVzaGltbS5jb20vcGFnZS8=")
+        site_url = base64.decodestring("aHR0cDovL3d3dy54aXVyci5jb20vcGFnZS8=")
         myUrl = site_url + page
         user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
         headers = {'User-Agent': user_agent}
@@ -94,7 +94,7 @@ class Spider_Model:
 
         print u'\n----background----now loading: page/' + page
 
-        myResponse = urllib2.urlopen(req)
+        myResponse = urllib2.urlopen(req, data=None, timeout=10)
         myPage = myResponse.read()
         # encode的作用是将unicode编码转换成其他编码的字符串
         # decode的作用是将其他编码的字符串转换成unicode编码
@@ -279,8 +279,8 @@ print u"""
    作者：guzi
    日期：2016-12-29
    语言：Python 2.7 
-   操作：输入:q退出阅读糗事百科 
-   功能：按下回车依次浏览今日的糗百热点 
+   操作：输入:q退出
+   功能：按下回车依次浏览
 --------------------------------------- 
 """
 myModel = Spider_Model()

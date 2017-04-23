@@ -34,7 +34,8 @@ git checkout <标签名> 切换到标签名指定的状态
 git diff <文件名> 查看文件修改内容
 
 git log      查看提交日志   --pretty=oneline  此参数减少输出信息  穿梭前，用git log可以查看提交历史，以便确定要回退到哪个版本。
-git reflog   要重返未来，用git reflog查看命令历史，以便确定要回到未来的哪个版本。
+git log --pretty=oneline
+git reflog   Git提供了一个命令git reflog用来记录你的每一次命令。要重返未来，用git reflog查看命令历史，以便确定要回到未来的哪个版本。
 git log --graph --pretty=oneline --abbrev-commit   查看分支合并图
 git reset --hard <HEAD^||提交ID> 穿梭到指定提交版本
 HEAD指向的版本就是当前版本，因此，Git允许我们在版本的历史之间穿梭，使用命令git reset --hard commit_id。
@@ -60,9 +61,30 @@ git remote -v 查看远程仓库  -v 为详细信息
 
 git checkout -b <本地支分支名> <远程仓库名，默认origin>/<远程支分支名> 拉取远程主分支下的支分支。。。
 git branch --set-upstream <本地支分支名> <远程仓库名，默认origin>/<远程支分支名>  将本地分支与远程指定的分支关联起来
+git branch --set-upstream master origin/next
 
 //以下为先有本地库，再建立远程库操作所用的命令
 git remote add origin <URL地址> 本地库与远征库关联
 git push -u origin master 关联后，使用命令第一次推送master分支的所有内容，   -u参数为推送当前分支所有内容
 
 git rm -r --cached .    删除本地缓存，然后再提交，因为.gitignore只能忽略那些原来没有被track的文件
+
+git push origin master:dev  远端创建分支。
+git push origin localdev:dev 将本地localdev分支推送到dev分支
+
+git config -l 查看所有配置
+git config --global 
+
+git branch -va 查看本地与远程所有分支及版本
+
+1） 在client 端撤消错误的提交：
+#回到之前的一个提交
+
+git reset --hard HEAD^
+
+2） 将新的提交 强制推到 git 服务器上：
+ 
+git push -f origin newdev:master
+
+
+
