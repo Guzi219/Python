@@ -116,7 +116,15 @@ class Spider_Model:
         # #re.S是任意匹配模式，也就是.可以匹配换行符
         # myItems[0]:the picurl; myItems[1]: the title
         #sometime, there are words between src & alt
-        myItems = re.findall('<noscript><img.*? src="(.+?)".*?alt="(.*?)" /></noscript>', unicodePage, re.S)
+        link_soups = BeautifulSoup(unicodePage)
+        links = link_soups.findAll("noscript")  #get all '<noscript><img /></noscript>'
+        myItems = [] #list: store the tup(src, alt)
+        for link in links:
+            tup1 = (link.img['src'], link.img['alt'])
+            myItems.append(tup1)
+
+        #repalce re.findall with beautifulsoup
+        #myItems = re.findall('<noscript><img.*? src="(.+?)".*?alt="(.*?)" /></noscript>', links_str, re.S)
 
         return myItems
 
@@ -219,8 +227,9 @@ class Spider_Model:
 
         hash_imgs = {}  # store the img_hash as key, the filepath as value..
         img_files = os.listdir('tmp')
-
+        img_files.sort()
         for file in img_files:
+            print file
             # print type(file) the type of 'file' is str.
             f = open(os.path.join('tmp', file), 'rb')
             hash_img = hashlib.md5(f.read()).hexdigest()  # md5 this file.
@@ -234,17 +243,9 @@ class Spider_Model:
                 print '%s already exsits.' % (file)  # the current file to be record.
                 print hash_imgs.get(hash_img)  # the file already record.
                 print '--------------'
-                # keep the lastest "modified date" file
+                # remove it
                 f1 = os.path.join('tmp', file)
-                f2 = os.path.join('tmp', hash_imgs.get(hash_img))
-                f1_mtime = os.path.getmtime(f1)
-                f2_mtime = os.path.getmtime(f2)
-                if f1_mtime > f2_mtime:
-                    # os.rename(f2, os.path.join('repeat', hash_imgs.get(hash_img)))
-                    os.remove(f2) #or remove image
-                else:
-                    # os.rename(f1, os.path.join('repeat', file))
-                    os.remove(f1) #or remove image
+                os.remove(f1)
 
         print 'done delete repeat files.'
 
@@ -287,3 +288,4 @@ myModel = Spider_Model()
 print u'请按下回车浏览今日的糗百内容：'
 raw_input(' ')
 myModel.Start()
+#myModel.CleanRepeatImage()

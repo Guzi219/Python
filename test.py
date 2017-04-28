@@ -9,6 +9,7 @@ from INIFILE import INIFILE
 import random
 import os
 import time
+import re
 
 soup = BeautifulSoup('<em title="python" class="boldest ts" value="hh">Extremely bold</em>')
 tag = soup.em
@@ -77,5 +78,13 @@ file.UnInit()
 #     time_ctime = time.ctime(time_seconds)
 #     # time_format = time_ctime.strftime
 #     print time_seconds
-
+relink = '<a href="(.*?)">(.*?)</a>'
+info = '<a href="http://www.baidu.com">baidu</a><a href="http://www.sina.com">sina</a>'
+cinfo = re.findall(relink,info)
+print type(cinfo)
+for x in cinfo:
+    print type(x)
+    print x[0]
+    print x[1]
+print cinfo
 
