@@ -1,5 +1,6 @@
 # Python
 new to Python
+1. Python version 2.1.7
 On windows, install the "requests" module.
 ==================
 D:\Python27\Scripts>pip install requests
