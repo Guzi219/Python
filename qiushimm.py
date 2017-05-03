@@ -229,7 +229,7 @@ class Spider_Model:
         img_files = os.listdir('tmp')
         img_files.sort()
         for file in img_files:
-            print file
+            #print file
             # print type(file) the type of 'file' is str.
             f = open(os.path.join('tmp', file), 'rb')
             hash_img = hashlib.md5(f.read()).hexdigest()  # md5 this file.
