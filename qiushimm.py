@@ -15,6 +15,9 @@ from INIFILE import INIFILE
 
 
 # ----------- 加载处理糗事百科 -----------
+from pip._vendor.requests import ReadTimeout
+
+
 class Spider_Model:
     def __init__(self):
         self.page = 1
@@ -77,13 +80,22 @@ class Spider_Model:
         # 不能保存，改用open方法
         # urllib.urlretrieve(item[0], self.save_path + save_file_name)
         # 保存图片
+        url = self.CheckUrlValidate(url)
+        try:
+            pic = requests.get(url, timeout=30)
+            f = open(self.store_dir + '\\' + save_file_name, 'wb')
+            f.write(pic.content)
+            f.close()
+            print '\ndone save file ' + save_file_name
+        except ReadTimeout:
+              print 'save file %s failed. cause by timeout(30)' %(save_file_name)
 
-        pic = requests.get(url)
-        f = open(self.store_dir + '\\' + save_file_name, 'wb')
-        f.write(pic.content)
-        f.close()
-        print '\ndone save file ' + save_file_name
-
+    #检查url是否包括http:协议
+    def CheckUrlValidate(self, url):
+        print url
+        if not url.startswith('http') and url.startswith("//"):
+            url = "http:" + url
+        return url
     # 将所有的段子都扣出来，添加到列表中并且返回列表  
     def GetPage(self, page):
         site_url = base64.decodestring("aHR0cDovL3d3dy54aXVyci5jb20vcGFnZS8=")
@@ -218,6 +230,7 @@ class Spider_Model:
         # 输出一页后暂停
         myInput = raw_input()
         if myInput == ":q":
+            self.CleanRepeatImage() #if break manually, must clean work dir.
             self.enable = False
 
     # deal with the repeated image
@@ -287,5 +300,6 @@ print u"""
 myModel = Spider_Model()
 print u'请按下回车浏览今日的糗百内容：'
 raw_input(' ')
+myModel.page=3 #start from which page, default 1
 myModel.Start()
-#myModel.CleanRepeatImage()
+# myModel.CleanRepeatImage()
