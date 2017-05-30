@@ -12,6 +12,7 @@ import base64
 import hashlib
 from BeautifulSoup import BeautifulSoup
 from INIFILE import INIFILE
+import emojiutil
 
 
 # ----------- 加载处理糗事百科 -----------
@@ -111,6 +112,8 @@ class Spider_Model:
         # encode的作用是将unicode编码转换成其他编码的字符串
         # decode的作用是将其他编码的字符串转换成unicode编码
         unicodePage = myPage.decode("utf-8")
+        #remove emoji[when this page get emoji inside, it'll run error:unichr() arg not in range(0x10000) (narrow Python build)]
+        unicodePage= emojiutil.remove_define_emoji(unicodePage)
         # print type(unicodePage)
 
         #only do it once
@@ -300,6 +303,6 @@ print u"""
 myModel = Spider_Model()
 print u'请按下回车浏览今日的糗百内容：'
 raw_input(' ')
-myModel.page=3 #start from which page, default 1
+myModel.page=4 #start from which page, default 1
 myModel.Start()
 # myModel.CleanRepeatImage()
