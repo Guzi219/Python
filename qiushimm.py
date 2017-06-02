@@ -303,6 +303,6 @@ print u"""
 myModel = Spider_Model()
 print u'请按下回车浏览今日的糗百内容：'
 raw_input(' ')
-myModel.page=4 #start from which page, default 1
+# myModel.page=4 #start from which page, default 1
 myModel.Start()
 # myModel.CleanRepeatImage()
