@@ -1,6 +1,6 @@
 # Python
 new to Python
-1. Python version 2.1.7
+1. Python version 2.7.13
 On windows, install the "requests" module.
 
 ==================
