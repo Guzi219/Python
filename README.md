@@ -2,7 +2,7 @@
 ==================
 ## Python version
 ------------
-- Best Python version for this program is 2.7.13
+- Best Python version for this program is **2.7.13**
 ## Installation
 ---------------
 > ```shell
