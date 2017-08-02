@@ -222,7 +222,8 @@ class Spider_Model:
         for idx, item in enumerate(now_page_items):
             print "\ndownload " + item[1]
             self.saveFile(item[0], page, idx)
-        print '========one page done.================='
+        #print '========one page done.================='
+        print '========Please hit the Enter.================='
         if self.unload_page_num == page:
             print '========all pages done. clean the repeated files.=========='
             self.CleanRepeatImage() #at last, deal with the repeated images.
@@ -291,10 +292,10 @@ class Spider_Model:
 # ----------- 程序的入口处 -----------
 print u""" 
 --------------------------------------- 
-   程序：糗百爬虫 
-   版本：0.3 
+   程序：爬虫
+   版本：3.0
    作者：guzi
-   日期：2016-12-29
+   日期：2017-8-1
    语言：Python 2.7 
    操作：输入:q退出
    功能：按下回车依次浏览
