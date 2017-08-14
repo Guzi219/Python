@@ -11,6 +11,8 @@ import urllib2
 import base64
 import hashlib
 from BeautifulSoup import BeautifulSoup
+
+from UserDefineHash import UserDefineHash
 from INIFILE import INIFILE
 import emojiutil
 
@@ -99,7 +101,8 @@ class Spider_Model:
         return url
     # 将所有的段子都扣出来，添加到列表中并且返回列表  
     def GetPage(self, page):
-        site_url = base64.decodestring("aHR0cDovL3d3dy54aXVyci5jb20vcGFnZS8=")
+        hashMethod = UserDefineHash(15)
+        site_url = hashMethod.decrypt('HGLHLHPHFDACACIHIHIHBCHHGGKHNHNHBCMGAGCGACPHOGIGKGAC')
         myUrl = site_url + page
         user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
         headers = {'User-Agent': user_agent}
@@ -232,10 +235,12 @@ class Spider_Model:
             os._exit(0) #can teminal main thread.
 
         # 输出一页后暂停
-        myInput = raw_input()
-        if myInput == ":q":
-            self.CleanRepeatImage() #if break manually, must clean work dir.
-            self.enable = False
+        time.sleep(1)
+        print 'take a snap for 1s.'
+        # myInput = raw_input()
+        # if myInput == ":q":
+        #     self.CleanRepeatImage() #if break manually, must clean work dir.
+        #     self.enable = False
 
     # deal with the repeated image
     def CleanRepeatImage(self):
