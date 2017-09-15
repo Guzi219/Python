@@ -40,7 +40,7 @@ class Spider_Model:
         retval = os.getcwd()
         print '#current dir is : ' + retval
         # 图片存放路径
-        store_dir = retval + r'\tmp'
+        store_dir = retval + os.sep + 'tmp'
         print '#all imgs are going to be stored in dir :' + store_dir
 
         if not os.path.exists(store_dir):
@@ -86,7 +86,7 @@ class Spider_Model:
         url = self.CheckUrlValidate(url)
         try:
             pic = requests.get(url, timeout=30)
-            f = open(self.store_dir + '\\' + save_file_name, 'wb')
+            f = open(self.store_dir + os.sep + save_file_name, 'wb')
             f.write(pic.content)
             f.close()
             print '\ndone save file ' + save_file_name
