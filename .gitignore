@@ -1,5 +1,6 @@
 #add ignore dir tmp
 tmp/
+tmp-s/
 *.pyc
 *.properties
 Properties.py
