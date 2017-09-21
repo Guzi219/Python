@@ -43,12 +43,12 @@ class UserDefineHash:
         except:
             return "failed"
 
-# if __name__=="__main__":
-#     userDefineHash = UserDefineHash()
-#     key = 15
-#     s1 = userDefineHash.encrypt(key, 'http://www.xiurr.com/page/')
-#     s2 = userDefineHash.decrypt(key, s1)
-#     print s1,'\n',s2
+if __name__=="__main__":
+    key = 15
+    userDefineHash = UserDefineHash(key)
+    s1 = userDefineHash.encrypt('http://www.qiubaichengren.com/')
+    s2 = userDefineHash.decrypt(s1)
+    print s1,'\n',s2
 
 # HGKGDGDGAGPCIHAGNHDGLG
 # hello world
