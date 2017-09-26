@@ -12,12 +12,12 @@ import base64
 import hashlib
 import chardet
 from BeautifulSoup import BeautifulSoup
+from requests.exceptions import MissingSchema
 
 from UserDefineHash import UserDefineHash
 from INIFILE import INIFILE
 import emojiutil
-from pip._vendor.requests import ReadTimeout
-
+from pip._vendor.requests import ReadTimeout, ConnectionError
 
 
 # ----------- 加载处理糗事百科 -----------
@@ -29,6 +29,7 @@ class Spider_Model:
         self.pages = []
         self.enable = False
         self.canLoad = True #sub thread can run?
+	self.allDone = False
         self.store_dir = None
         self.init_work_dir()
 
@@ -87,13 +88,18 @@ class Spider_Model:
         # 保存图片
         url = self.CheckUrlValidate(url)
         try:
-            pic = requests.get(url, timeout=30)
+            pic = requests.get(url, timeout=10)
             f = open(self.store_dir + os.sep + save_file_name, 'wb')
             f.write(pic.content)
             f.close()
             print '\ndone save file ' + save_file_name
         except ReadTimeout:
-              print 'save file %s failed. cause by timeout(30)' %(save_file_name)
+              print 'save file %s failed. cause by timeout(10)' %(save_file_name)
+        except MissingSchema:
+            print 'invalid url %s' %(url)
+        except Exception, e:
+            print e
+
 
     #检查url是否包括http:协议
     def CheckUrlValidate(self, url):
@@ -142,9 +148,14 @@ class Spider_Model:
         parent_divs = link_soups.findAll('div',attrs={'class':'mala-text'})
         myItems = [] #list: store the tup(src, alt)
         for parent_div in parent_divs:
-            link = parent_div.find('img')
-            tup1 = (link['src'], link['alt'])
-            myItems.append(tup1)
+            try:
+                link = parent_div.find('img')
+                tup1 = (link['src'], link['alt'])
+                myItems.append(tup1)
+            except KeyError,e: #if u can't get key attr
+                print 'KeyError', e
+	    except Exception,e: 
+	        print 'Other Error', e
 
         return myItems
 
@@ -184,12 +195,13 @@ class Spider_Model:
         file.UnInit()
 
         if int(new_page_num) >= int(old_page_num): #if there is new page
+            # self.unload_page_num = int(new_page_num) - int(old_page_num)
             self.unload_page_num = int(new_page_num) - int(old_page_num)
             if self.unload_page_num == 0:   #页码未增加，但是图片新增了
                self.unload_page_num = 1
-            elif self.unload_page_num > 0: #增加新页面了，但是旧页上图片存在未下载的情况
-                self.unload_page_num += 1
-            print 'Ok, we got %s pages to load.' %(self.unload_page_num)
+            elif self.unload_page_num > 0: #增加新页面了，但是旧页上图片存在未下载的情况***会导致下载不会结束
+               self.unload_page_num += 1
+            print 'since we start at page %s, we still got (%s-%s) pages to load.' %(self.page, self.unload_page_num, self.page)
         else: #nothing new, stop main thread
             print 'Oops! Nothing new. exit main thread now.'
             os._exit(0) #terminal sub thread
@@ -209,13 +221,13 @@ class Spider_Model:
                     self.page += 1
                     self.pages.append(myPage)
                     # print 'self.pages ' + str(len(self.pages))
-                    # print '====================%s============%s' %(self.unload_page_num, self.page)
-                    if self.unload_page_num < self.page:
+                    print '====================%s============%s' %(self.unload_page_num, self.page)
+                    if self.unload_page_num <= self.page:
                         print 'already load all new page, stop sub thread now.'
                         self.canLoad = False #let this thread do nothing
+			self.allDone = True
 
                 except Exception, e:
-                    # print '无法链接糗事百科！\n'
                     print e
             else:
                 time.sleep(1)
@@ -230,7 +242,8 @@ class Spider_Model:
             self.saveFile(item[0], page, idx)
         #print '========one page done.================='
         print '========Please hit the Enter.================='
-        if self.unload_page_num == page:
+        #if self.unload_page_num == page:
+        if self.allDone:
             print '========all pages done. clean the repeated files.=========='
             self.CleanRepeatImage() #at last, deal with the repeated images.
             print 'Nothing left. Now close this application.'
@@ -290,7 +303,7 @@ class Spider_Model:
 
                 # del now page items
                 del self.pages[0]
-
+		print '---main thred --', page
                 self.ShowOnePage(now_page_items, page)
                 page += 1
 
@@ -312,6 +325,6 @@ print u"""
 myModel = Spider_Model()
 print u'请按下回车浏览今日的糗百内容：'
 raw_input(' ')
-# myModel.page=4 #start from which page, default 1
+#myModel.page=913 #start from which page, default 1
 myModel.Start()
 # myModel.CleanRepeatImage()
