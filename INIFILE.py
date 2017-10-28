@@ -1,6 +1,10 @@
 # -*- coding:utf-8 -*_
 import ConfigParser, sys
 class INIFILE:
+    """
+    a class which can process *.ini file
+    with read and write function.
+    """
     def __init__(self, fileName):
         self.fileName = fileName
         # print self.fileName
