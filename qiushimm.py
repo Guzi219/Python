@@ -91,7 +91,10 @@ class Spider_Model:
             f.close()
             print '\ndone save file ' + save_file_name
         except ReadTimeout:
-              print 'save file %s failed. cause by timeout(30)' %(save_file_name)
+            print 'save file %s failed. cause by timeout(30)' %(save_file_name)
+        except Exception, e:
+            print 'this python version does not support https.'
+            print e
 
     #检查url是否包括http:协议
     def CheckUrlValidate(self, url):
@@ -102,7 +105,7 @@ class Spider_Model:
     # 将所有的段子都扣出来，添加到列表中并且返回列表  
     def GetPage(self, page):
         hashMethod = UserDefineHash(15)
-        site_url = hashMethod.decrypt('HGLHLHPHFDACACIHIHIHBCHHGGKHNHNHBCMGAGCGACPHOGIGKGAC')
+        site_url = hashMethod.decrypt('HGLHLHPHFDACACIHIHIHBCGGKHIDHDBCMGAGCGACPHOGIGKGAC')
         myUrl = site_url + page
         user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
         headers = {'User-Agent': user_agent}
@@ -138,7 +141,10 @@ class Spider_Model:
         links = link_soups.findAll("noscript")  #get all '<noscript><img /></noscript>'
         myItems = [] #list: store the tup(src, alt)
         for link in links:
-            tup1 = (link.img['src'], link.img['alt'])
+            altText = link.img.get('alt') #if img has no alt attribute
+            if altText == None:
+                altText = 'img has no alt attribute.'
+            tup1 = (link.img['src'], altText)
             myItems.append(tup1)
 
         #repalce re.findall with beautifulsoup

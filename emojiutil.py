@@ -35,7 +35,8 @@ def remove_emoji(desstr,restr=''):
 def remove_define_emoji(desstr,restr=''):
     try:
          co = re.compile(u'&#x1f60c;')
-         print 'remove defind emoji only.'
+         print 'remove define emoji only.'
     except Exception, e:
+        print 'error ===='
         print e
     return co.sub(restr,desstr)
