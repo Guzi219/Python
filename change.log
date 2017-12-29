@@ -1,0 +1,7 @@
+http://www.iu78.com/
+http://www.qiubaichengren.com/
+#将下载的图片放在tmp目录，前台读取大图目录改为origin_image
+#tomcat虚拟目录相应改为origin_image
+#缩略图生成后，将tmp目录内所有内容移动到origin_image目录
+#mv tmp/* origin_image/
+#java对应的file.properties修改为origin_image

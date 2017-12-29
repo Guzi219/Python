@@ -15,6 +15,7 @@ def image_size_off(rootDir):
         # 需要什么格式的图片自己手动改改就好了
         suffix = lists[lists.rfind('.'):].lower()
         path = os.path.join(rootDir, lists)
+	print '...'
         if suffix == '.jpg' or suffix == '.png':
             try:
                 im = Image.open(path).convert('RGB')
