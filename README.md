@@ -13,7 +13,7 @@
 > ```
 ## Usage 
 ---------
-* run the main program '**qiushimm.py**', you will get images in the 'tmp' folder(the same directory as the project).
-
+* run the main program '**com.github.crawlspider.img-website.qiushimm.py**', you will get images in the 'tmp' folder(the same directory as the project root(as default).
+* and also you can change the 'tmp' dir, edit the file mentioned above : self.store_dir = ur'F:\learning\python\Python\tmp'
 ## Enjoy it.
 ----------
