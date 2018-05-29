@@ -31,7 +31,7 @@ class Driver(object):
                     # 'javascript': 2
                 },
                 'profile.default_content_settings.popups': 0,
-                'download.default_directory': 'F:\\个人\\english-doc'
+                'download.default_directory': 'F:\\个人\\english-doc-7degree'
             }
             options.add_experimental_option('prefs', prefs)
             self.driver = webdriver.Chrome(chrome_options=options)

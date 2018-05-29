@@ -11,13 +11,12 @@ import urllib2
 
 import requests
 from BeautifulSoup import BeautifulSoup
+from INIFILE import INIFILE
 from pip._vendor.requests import ReadTimeout
 from requests.exceptions import MissingSchema
-from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from DriverSingleton import Driver
-from INIFILE  import INIFILE 
+
+from Driver import Driver
 
 
 # ----------- 加载处理糗事百科 -----------
@@ -33,12 +32,8 @@ class Spider_Model:
         self.store_dir = None
         self.init_work_dir()
 
-        self.isFirst = True  # run only once
+        self.isFirst = False  # run only once
         self.unload_page_num = 0  # page to be loaded
-        
-        self.proFileName = 'english_download.ini'
-
-        self.defaultSearch = {'wd':'九年级 中考 2018 英语'}
 
         # 主域名
         self.domainName = 'http://www.well1000.cn'
@@ -141,48 +136,58 @@ class Spider_Model:
     # 模拟浏览器打开
     def GetFileDownloadPath(self, pageUrl):
         pageUrl = self.domainName + pageUrl
-        # 打开页面
+        t0 = time.time()
         self.webDriverPage.start(pageUrl)
-        self.retryClick(pageUrl)
-        # time.sleep(1.22)
+        t1 = time.time()
+        print 'cost ' + (t1 - t0)
+        # cookie
+        cookies = self.webDriverPage.driver.get_cookies()
 
-        # ctrl+t 打开新标签页
-        # self.webDriverPage.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't')
-        # self.webDriverPage.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't')
-        # self.webDriverPage.close()
+        #
+        cookieStr = ''
+        for cookie in cookies:
+            # print cookie['name'], cookie['value']
+            cookieStr = cookieStr + cookie['name'] + "=" + cookie['value'] + ";"
+            # print type(cookie)
+        cookieStr = cookieStr[:-1]
 
-    # 解决：StaleElementReferenceException: Message: stale element reference: element is not attached to the page document
-    def retryClick(self, pageUrl):
-        result = False
-        attempts = 0
-        while attempts < 3:
-            try:
-                # 多歇会儿，重新来
-                time.sleep(3.333)
-                if attempts > 0:
-                    print 'reload ' + pageUrl
-                self.webDriverPage.start(pageUrl)
-                # 模拟滚动条
-                self.webDriverPage.driver.execute_script("window.scrollTo(0,1050)")
-                time.sleep(1.111)
-                link = self.webDriverPage.find_element(By.CSS_SELECTOR, 'div#biao a')
-                # 模拟点击链接下载
-                link.click()
-                print('downloading ' + link.text)
-                result = True
-                break
-            except StaleElementReferenceException, e:
-                # print self.webDriverPage.driver.page_source
-                print e.message
-            except Exception, e:
-                print e.message
-            attempts += 1
-        return result
+        link = self.webDriverPage.find_element(By.CSS_SELECTOR, 'div#biao a')
+        fileDescTuple = ()
+        fileDescTuple = (link.get_attribute('href'), link.text)
+        self.downloadFile(fileDescTuple, pageUrl, cookieStr)
+
+
+    # 下载文件主程序
+    def downloadFile(self, fileDescTuple, referUrl, cookieStr):
+        if len(fileDescTuple) == 2 :
+            fileLink = fileDescTuple[0]
+            fileDesc = fileDescTuple[1]
+
+            # 网站验证rerfer是否属于本网站，并且验证cookie{title,id}是否存在，不验证值
+
+            myHeaders = {
+                'Referer': referUrl,
+                'Cookie': cookieStr
+            }
+            doc = requests.get(fileLink, headers = myHeaders, timeout=10)
+            # print urllib.parse.unquote(r.headers['Content-Disposition'])
+            # print r.headers['Content-Disposition']
+            # print type(r.headers['Content-Disposition'])
+            #urldecode
+            fileName =  urllib.unquote(doc.headers['Content-Disposition'])
+            fileName = fileName[len('attachment; filename='):]
+            print 'download : ' + fileName
+            fileName = unicode(fileName, "utf-8")
+            print type(fileName)
+            self.saveDocFile(doc, fileLink, fileName)
+            if not self.isFirstWindow:
+                self.webDriverPage.close()
+                self.isFirstWindow = False
 
 
     # 将所有的段子都扣出来，添加到列表中并且返回列表
     def GetPage(self, page):
-        site_url = 'http://www.well1000.cn/so/search_well.aspx?' + urllib.urlencode(self.defaultSearch)
+        site_url = 'http://www.well1000.cn/so/search_well.aspx?wd=%E4%B9%9D%E5%B9%B4%E7%BA%A7%20%E4%B8%AD%E8%80%83%202018%20%E8%8B%B1%E8%AF%AD'
         myUrl = site_url + '&pg=' + page
         user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
         headers = {'User-Agent': user_agent}
@@ -259,28 +264,31 @@ class Spider_Model:
     def SaveTotalPageToFile(self, new_page_num):
         print '====================save the totalpage to totalpage.ini===================='
 
-        iniFile  = INIFILE(self.proFileName)
+        proFileName = 'english_download.ini'
+        file = INIFILE(proFileName)
+
         # must write something if you set is_write to true. otherwise your file become empty.
-        is_ok = iniFile.Init(True, True)
+        is_ok = file.Init(True, True)
         if not is_ok:
-            print 'class initializing failed. check the [%s] file first.' % (self.proFileName)
+            print 'class initializing failed. check the [%s] file first.' % (proFileName)
             os._exit(0)
 
-        loaded_page_num = iniFile.GetValue('Main', 'loadedpage')
-        print '====================the loaded_page_num is [%s], the new_page_num is [%s]====================' % (loaded_page_num, new_page_num)
-        iniFile.SetValue('SUM', 'totalpage', new_page_num)
+        old_page_num = file.GetValue('Main', 'totalpage')
+        print '====================the old_page_num is [%s], the new_page_num is [%s]====================' % (
+            old_page_num, new_page_num)
+        file.SetValue('Main', 'totalpage', new_page_num)
         # close all
-        iniFile.UnInit()
+        file.UnInit()
 
-        if int(new_page_num) >= int(loaded_page_num):  # if there is new page
-            # self.unload_page_num = int(new_page_num) - int(loaded_page_num)
-            self.unload_page_num = int(new_page_num) - int(loaded_page_num)
+        if int(new_page_num) >= int(old_page_num):  # if there is new page
+            # self.unload_page_num = int(new_page_num) - int(old_page_num)
+            self.unload_page_num = int(new_page_num) - int(old_page_num)
             if self.unload_page_num == 0:  # 页码未增加，但是图片新增了
                 self.unload_page_num = 1
             elif self.unload_page_num > 0:  # 增加新页面了，但是旧页上图片存在未下载的情况***会导致下载不会结束
                 self.unload_page_num += 1
-            print 'since we start at page %s, we still got (%s) pages to load.' % (
-                self.page, self.unload_page_num)
+            print 'since we start at page %s, we still got (%s-%s) pages to load.' % (
+                self.page, self.unload_page_num, self.page)
         else:  # nothing new, stop main thread
             print 'Oops! Nothing new. exit main thread now.'
             os._exit(0)  # terminal sub thread
@@ -320,39 +328,56 @@ class Spider_Model:
     def ShowOnePage(self, now_page_items, page):
         for idx, item in enumerate(now_page_items):
             print "\nopen " + item[0]
-            time.sleep(1.666)
             self.GetFileDownloadPath(item[0])
         # print '========one page done.================='
         print '========Please hit the Enter.================='
+        # if self.unload_page_num == page:
         if self.allDone:
+            # print '========all pages done. clean the repeated files.=========='
+            # self.CleanRepeatImage() #at last, deal with the repeated images.
             print 'Nothing left. Now close this application.'
             # self.enable = False  #let the main thread know it's time to quit
             os._exit(0)  # can teminal main thread.
 
-        #当前页码
-        iniFile = INIFILE(self.proFileName)
-        iniFile.Init(False, True)
-        iniFile.SetValue('Main', 'loadedpage', page)
-        iniFile.UnInit()
-
         # 输出一页后暂停
         time.sleep(1)
         print 'take a snap for 1s.'
-
         # 手动抓取
-        # myInput = raw_input()
+        myInput = raw_input()
         # if myInput == ":q":
         #     self.CleanRepeatImage() #if break manually, must clean work dir.
         #     self.enable = False
 
 
-    #decide which page to start
-    def whichPage2Start(self):
-        file = INIFILE(self.proFileName)
-        file.Init(True, False)
-        startPage = file.GetValue('Main', 'loadedpage', 0)
-        file.UnInit()
-        self.page = int(startPage)
+    # deal with the repeated image
+    def CleanRepeatImage(self):
+        if not os.path.exists('repeat'):  # store the repeated file
+            os.mkdir('repeat')
+
+        hash_imgs = {}  # store the img_hash as key, the filepath as value..
+        img_files = os.listdir('tmp')
+        img_files.sort()
+        for file in img_files:
+            # print file
+            # print type(file) the type of 'file' is str.
+            f = open(os.path.join('tmp', file), 'rb')
+            hash_img = hashlib.md5(f.read()).hexdigest()  # md5 this file.
+            f.close()
+            # print type(hash_img)
+            # print hash_img
+            if not hash_imgs.has_key(hash_img):
+                hash_imgs[hash_img] = file
+            else:
+                print '--------------'
+                print '%s already exsits.' % (file)  # the current file to be record.
+                print hash_imgs.get(hash_img)  # the file already record.
+                print '--------------'
+                # remove it
+                f1 = os.path.join('tmp', file)
+                os.remove(f1)
+
+        print 'done delete repeat files.'
+
 
     def Start(self):
         self.enable = True
@@ -389,7 +414,6 @@ print u"""
 """
 myModel = Spider_Model()
 print u'请按下回车浏览英语下载网站：'
-myModel.whichPage2Start()
 raw_input(' ')
 # myModel.page=913 #start from which page, default 1
 myModel.Start()

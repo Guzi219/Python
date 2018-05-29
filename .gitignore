@@ -8,3 +8,6 @@ totalpage.ini
 repeat/
 qiubaiadult_page.ini
 origin_image
+geckodriver.log
+ghostdriver.log
+.idea/

@@ -32,6 +32,8 @@ class Tv_Dy2018:
             js_str = soup.script.string #two ways to get the <script></script>
             new_url = js_str[16:-1] #get the new url
             new_url = eval(new_url) #eval:计算字符串中的表达式
+            print 'retry again.'
+            time.sleep(1.2333)
             self.ParseHtml(self.LoadPage(new_url))
         else:
             # print type(links)
@@ -39,10 +41,11 @@ class Tv_Dy2018:
                 # print type(link)
                 # print type(link.string)
                 # print unicode(link.string)
-                titles = re.findall(r'《(.+?)》', str(link.string)) #unicode(link.string))
-                if len(titles) <> 0:
-                    print titles[0]
-                # print 'url is %s, title is %s.' %(link['href'], titles[0])
+                # print link.string
+                # titles = re.findall(r'《(.+?)》', str(link.string)) #unicode(link.string))
+                # if len(titles) <> 0:
+                #     print titles[0]
+                print 'url is %s, title is %s.' %(link['href'], link.string)
 
 myUrl = '/html/tv/oumeitv/index.html'
 myUrl2 = '/html/tv/oumeitv/index_2.html'

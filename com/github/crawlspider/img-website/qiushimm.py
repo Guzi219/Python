@@ -1,22 +1,19 @@
 # -*- coding: utf-8 -*-  
 
 import datetime
+import hashlib
 import os
-import re
-import requests
 import string
 import thread
 import time
 import urllib2
-import base64
-import hashlib
+
+import requests
 from BeautifulSoup import BeautifulSoup
+from com.github.utils.IniFileUtil import INIFILE
 
-from UserDefineHash import UserDefineHash
-from INIFILE import INIFILE
-import emojiutil
-
-
+from com.github.utils import emojiutil
+from com.github.utils.UserDefineHash import UserDefineHash
 # ----------- 加载处理糗事百科 -----------
 from pip._vendor.requests import ReadTimeout
 
@@ -27,28 +24,24 @@ class Spider_Model:
         self.pages = []
         self.enable = False
         self.canLoad = True #sub thread can run?
-        self.store_dir = None
-        self.init_work_dir()
+        self.store_dir = ur'F:\learning\python\Python\tmp'
+        self.init_work_dir(self.store_dir)
+        self.repeat_dir = ur'F:\learning\python\Python\repeat'
 
         self.isFirst = True #run only once
         self.unload_page_num = 0 #page to be loaded
         # self.save_path = 'F:\\qiushimm\\'
 
 
-    # init the storage dir = 'tmp /'
-    def init_work_dir(self):
-        retval = os.getcwd()
-        print '#current dir is : ' + retval
-        # 图片存放路径
-        store_dir = retval + os.sep + 'tmp'
+    def init_work_dir(self, store_dir):
         print '#all imgs are going to be stored in dir :' + store_dir
 
         if not os.path.exists(store_dir):
-            print '#tmp dir does not exist, attemp to mkdir'
+            print 'dir does not exist, attemp to mkdir'
             os.mkdir(store_dir)
             print '#mkdir sucessfully'
         else:
-            print '#tmp dir is already exist'
+            print 'dir is already exist'
 
         self.store_dir = store_dir
 
@@ -106,6 +99,7 @@ class Spider_Model:
     def GetPage(self, page):
         hashMethod = UserDefineHash(15)
         site_url = hashMethod.decrypt('HGLHLHPHFDACACIHIHIHBCGGKHIDHDBCMGAGCGACPHOGIGKGAC')
+        print site_url
         myUrl = site_url + page
         user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
         headers = {'User-Agent': user_agent}
@@ -173,18 +167,9 @@ class Spider_Model:
         print '====================save the totalpage to totalpage.ini===================='
 
         file = INIFILE('totalpage.ini')
-
-        # must write something if you set is_write to true. otherwise your file become empty.
-        is_ok = file.Init(True, True)
-        if not is_ok:
-            print 'class initializing failed. check the [%s] file first.' % ('totalpage.ini')
-            os._exit(0)
-
         old_page_num = file.GetValue('Main', 'totalpage')
         print '====================the old_page_num is [%s], the new_page_num is [%s]====================' % (old_page_num, new_page_num)
-        file.SetValue('Main', 'totalpage', new_page_num)
-        #close all
-        file.UnInit()
+        file.SetValue('Main', 'totalpage', new_page_num).EndWrite().UnInit()
 
         if int(new_page_num) >= int(old_page_num): #if there is new page
             self.unload_page_num = int(new_page_num) - int(old_page_num)
@@ -250,16 +235,16 @@ class Spider_Model:
 
     # deal with the repeated image
     def CleanRepeatImage(self):
-        if not os.path.exists('repeat'): #store the repeated file
-            os.mkdir('repeat')
+        if not os.path.exists(self.repeat_dir): #store the repeated file
+            os.mkdir(self.repeat_dir)
 
         hash_imgs = {}  # store the img_hash as key, the filepath as value..
-        img_files = os.listdir('tmp')
+        img_files = os.listdir(self.store_dir)
         img_files.sort()
         for file in img_files:
             #print file
             # print type(file) the type of 'file' is str.
-            f = open(os.path.join('tmp', file), 'rb')
+            f = open(os.path.join(self.store_dir, file), 'rb')
             hash_img = hashlib.md5(f.read()).hexdigest()  # md5 this file.
             f.close()
             # print type(hash_img)
@@ -272,7 +257,7 @@ class Spider_Model:
                 print hash_imgs.get(hash_img)  # the file already record.
                 print '--------------'
                 # remove it
-                f1 = os.path.join('tmp', file)
+                f1 = os.path.join(self.store_dir, file)
                 os.remove(f1)
 
         print 'done delete repeat files.'
