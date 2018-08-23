@@ -8,7 +8,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 OVER_TIME = 6
-BASE_URL = "http://www.well1000.cn/stdown/yingyu/123136.html"
+BASE_URL = "https://www.baidu.com"
 
 
 class Driver(object):
@@ -50,17 +50,24 @@ class Driver(object):
                 },
                 'profile.default_content_settings.popups': 0,
                 'download.default_directory': 'F:\\个人\\english-doc'
+
             }
             options.add_experimental_option('prefs', prefs)
+            # 增加cookie及扩展路径
+            # options.add_argument(r'user-data-dir=C:\Users\guyongping\AppData\Local\Google\Chrome\User Data')
             self.driver = webdriver.Chrome(chrome_options=options)
 
         self.driver.implicitly_wait(OVER_TIME)
+        # add cookied
         self.driver.get(url)
+        self.driver.add_cookie({'name': 'BDUSS', 'value': 'FINVZJSVdHNVBYNFh4STBldTBEYWZpN3Z-VjhZcTI3LTI4anJMODUydDNWbEJiQVFBQUFBJCQAAAAAAAAAAAEAAADuCiwDeXl5NTIxZnl5AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHfJKFt3yShbdU'})
+
+        self.driver.refresh()
         t1 = time.time()
         # print '==cost ' + str(t1 - t0)
-        locator = (By.CSS_SELECTOR, 'div#biao')
+        # locator = (By.CSS_SELECTOR, 'div#biao')
         # 一个只要一个符合条件的元素加载出来就通过
-        WebDriverWait(self.driver, 10, 0.5).until(EC.presence_of_element_located(locator))
+        # WebDriverWait(self.driver, 10, 0.5).until(EC.presence_of_element_located(locator))
         # 执行javaascript： shi() 得到下载地址
         # self.driver.execute_script("shi")
         t2 = time.time()
@@ -143,6 +150,7 @@ if __name__ == "__main__":
     page.start()
     t2 = time.time()
     print 'cost ' + str(t2 - t1)
+    """
     # print type(page.find_element(By.ID, 'biao'))
     link = page.find_element(By.CSS_SELECTOR, 'div#biao a')
     print 'url ', link.get_attribute('href')
@@ -160,3 +168,4 @@ if __name__ == "__main__":
     link.click()
 
     # page.quit()
+    """

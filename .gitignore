@@ -1,5 +1,6 @@
 #add ignore dir tmp
 tmp/
+/.idea/
 tmp-s/
 *.pyc
 *.properties

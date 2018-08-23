@@ -6,8 +6,9 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-OVER_TIME = 6
-BASE_URL = "http://www.well1000.cn/xiazai/yingyu/148321.html"
+OVER_TIME = 2
+# BASE_URL = "https://www.dy2018.com/html/gndy/dyzz/index.html"
+BASE_URL = "https://www.dy2018.com/html/tv/oumeitv/"
 
 
 class Driver(object):
@@ -28,10 +29,10 @@ class Driver(object):
             prefs = {
                 'profile.default_content_setting_values': {
                     'images': 2,
-                    # 'javascript': 2
+                    'javascript': 2
                 },
                 'profile.default_content_settings.popups': 0,
-                'download.default_directory': 'F:\\个人\\english-doc-8degree'
+                'download.default_directory': 'F:\\个人\\english-doc-7degree'
             }
             options.add_experimental_option('prefs', prefs)
             self.driver = webdriver.Chrome(chrome_options=options)
@@ -55,14 +56,10 @@ class Driver(object):
         :param url: 测试地址
         :return:
         """
-        t0 = time.time()
         self.driver.get(url)
-        # 执行javaascript： shi() 得到下载地址
-        # self.driver.execute_script("shi()")
-        locator = (By.CSS_SELECTOR, 'div#biao')
+        # locator = (By.CSS_SELECTOR, 'div#biao')
         # 一个只要一个符合条件的元素加载出来就通过
-        WebDriverWait(self.driver, 10, 0.5).until(EC.presence_of_element_located(locator))
-        print 'cost ' + str(time.time() - t0)
+        # WebDriverWait(self.driver, 10, 0.5).until(EC.presence_of_element_located(locator))
 
     def get_url(self):
         """返回浏览器的地址"""
@@ -137,20 +134,66 @@ if __name__ == "__main__":
     page.start()
     t2 = time.time()
     print 'cost ' + str(t2 - t1)
-    # print type(page.find_element(By.ID, 'biao'))
-    link = page.find_element(By.CSS_SELECTOR, 'div#biao a')
-    print 'url ', link.get_attribute('href')
-    print 'name ', link.text
-    link.click()
-    # # ctrl+t 打开新标签页
-    page.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't')
-    # js = " window.open('http://www.well1000.cn/stdown/yingyu/122545.html')"  # 可以看到是打开新的标签页 不是窗口
-    # page.driver.execute_script(js)
-    # 下载二遍
-    # page.start('http://www.well1000.cn/stdown/yingyu/122545.html')
-    # link = page.find_element(By.CSS_SELECTOR, 'div#biao a')
-    # print 'url ', link.get_attribute('href')
-    # print 'name ', link.text
-    # link.click()
 
-    # page.quit()
+    for i in range(1,3):
+        # 当前主页面
+        currentWindow = page.driver.current_window_handle
+        print 'main page: ' + currentWindow
+
+        links = page.find_display_elements(By.CSS_SELECTOR, 'a.ulink')
+        for link in links:
+            linkUrl = link.get_attribute('href')
+            # print link.text, '[', linkUrl, ']'
+
+        for idx, link in enumerate(links):
+            linkUrl = link.get_attribute('href')
+            title = link.text
+            # 只需要匹配某一个电视剧名字
+            # if title.find(u'超女') != -1 or True:
+            if True:
+                # 依次打开
+                js = 'window.open("' + linkUrl + '")'
+                page.driver.execute_script(js)
+
+                time.sleep(1.22)
+                print 'only open ' + str(idx) + ' page to test'
+                # break
+            # 这里并不会切换到新页面
+            # print 'current : ' + page.driver.current_window_handle
+
+        for handle in page.driver.window_handles:
+            if handle != currentWindow:
+                # print 'switch to ', handle
+                page.driver.switch_to.window(handle)
+                print page.driver.current_window_handle
+                # print 'get something from this page'
+
+                print '==========Xunlei Download=========='
+                aLinks = page.find_display_elements(By.CSS_SELECTOR, 'div#Zoom td a')
+                for aLink in aLinks:
+                    print aLink.text
+
+                print '==========Web Flashplayer========='
+                xiguaLinks = page.find_display_elements(By.CSS_SELECTOR, 'div#Zoom li a')
+                for xiguaLink in xiguaLinks:
+                    print xiguaLink.text, xiguaLink.get_attribute('href')
+                time.sleep(1.33)
+                # 关闭当前选项卡
+                page.driver.close()
+
+        print 'main page left...'
+        # 切换到main
+        page.driver.switch_to.window(currentWindow)
+        time.sleep(2)
+        # by xpath
+        # nextPage = page.find_element(By.XPATH, '//div[@class="x"]/a[0]')
+        # by link text
+        nextPage = page.driver.find_element_by_link_text('下一页')
+        nextPage.click()
+
+        time.sleep(1.333)
+
+    # end for
+
+
+
