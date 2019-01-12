@@ -11,8 +11,7 @@ import urllib2
 
 import requests
 from BeautifulSoup import BeautifulSoup
-from pip._vendor.requests import ReadTimeout
-from requests.exceptions import MissingSchema
+from requests.exceptions import MissingSchema, ReadTimeout
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from DriverSingleton import Driver
@@ -38,8 +37,8 @@ class Spider_Model:
         
         self.proFileName = 'english_download.ini'
 
-        self.defaultSearch = {'wd':'2018 七年级 英语 试题 试卷'}
-        self.filterWords = [u'英语', u'七年级', u'试', '2018']
+        self.defaultSearch = {'wd':'2018 高一 英语 试题 试卷'}
+        self.filterWords = [u'英语', u'高一', u'试', '2018']
 
         # 主域名
         self.domainName = 'http://www.well1000.cn'
@@ -150,8 +149,8 @@ class Spider_Model:
         pageUrl = self.domainName + pageUrl
         # 打开页面
         self.webDriverPage.start(pageUrl)
-        # self.retryClick(pageUrl)
-        # time.sleep(1.22)
+        self.retryClick(pageUrl)
+        time.sleep(1.22)
 
         # ctrl+t 打开新标签页
         # self.webDriverPage.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't')

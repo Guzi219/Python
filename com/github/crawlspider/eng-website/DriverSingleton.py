@@ -31,7 +31,7 @@ class Driver(object):
                     # 'javascript': 2
                 },
                 'profile.default_content_settings.popups': 0,
-                'download.default_directory': 'F:\\个人\\english-doc-8degree'
+                'download.default_directory': 'E:\\个人\\english-doc-1degree'
             }
             options.add_experimental_option('prefs', prefs)
             self.driver = webdriver.Chrome(chrome_options=options)
@@ -141,6 +141,9 @@ if __name__ == "__main__":
     link = page.find_element(By.CSS_SELECTOR, 'div#biao a')
     print 'url ', link.get_attribute('href')
     print 'name ', link.text
+    # 模拟滚动条
+    page.driver.execute_script("window.scrollTo(0,1050)")
+    time.sleep(1.111)
     link.click()
     # # ctrl+t 打开新标签页
     page.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't')
